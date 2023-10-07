@@ -85,31 +85,61 @@ def check_collision_scissor():
                 update_score()
 
 def update_score():
-    score_label.config(text=f"Rock: {len(label_rock)} Paper: {len(label_paper)} Scissor: {len(label_scissor)}")
+    global score_rock
+    score_rock = len(label_rock)
+    global score_paper
+    score_paper = len(label_paper)
+    global score_scissor
+    score_scissor = len(label_scissor)
+    score_label.config(text=f"Rock: {score_rock} Paper: {score_paper} Scissor: {score_scissor}")
 
 def move_toward_target_rock():
+    to_continue = True
     for label in label_rock:
-        target_x, target_y = find_nearest_target(label, label_scissor)
-        move_label_toward_target(label, target_x, target_y, 3, 3)
-    check_collision_rock()
-    update_score()
-    window.after(5, move_toward_target_rock)
+        try:
+            target_values_scissor = find_nearest_target(label, label_scissor)
+            target_x, target_y = target_values_scissor
+            move_label_toward_target(label, target_x, target_y, 3, 3)
+        except:
+            check_finish()
+            to_continue = False
+            break
+    if to_continue:
+        check_collision_rock()
+        update_score()
+        window.after(5, move_toward_target_rock)
 
 def move_toward_target_paper():
+    to_continue = True
     for label in label_paper:
-        target_x, target_y = find_nearest_target(label, label_rock)
-        move_label_toward_target(label, target_x, target_y, 3, 3)
-    check_collision_paper()
-    update_score()
-    window.after(5, move_toward_target_paper)
+        try:
+            target_value_rock = find_nearest_target(label, label_rock)
+            target_x, target_y = target_value_rock
+            move_label_toward_target(label, target_x, target_y, 3, 3)
+        except:
+            check_finish()
+            to_continue = False
+            break
+    if to_continue:
+        check_collision_paper()
+        update_score()
+        window.after(5, move_toward_target_paper)
 
 def move_toward_target_scissor():
+    to_continue = True
     for label in label_scissor:
-        target_x, target_y = find_nearest_target(label, label_paper)
-        move_label_toward_target(label, target_x, target_y, 3, 3)
-    check_collision_scissor()
-    update_score()
-    window.after(5, move_toward_target_scissor)
+        try:
+            target_value_paper = find_nearest_target(label, label_paper)
+            target_x, target_y = target_value_paper
+            move_label_toward_target(label, target_x, target_y, 3, 3)
+        except:
+            check_finish()
+            to_continue = False
+            break
+    if to_continue:
+        check_collision_scissor()
+        update_score()
+        window.after(5, move_toward_target_scissor)
 
 def find_nearest_target(label, targets):
     current_x, current_y = label_positions[label]
@@ -124,6 +154,20 @@ def find_nearest_target(label, targets):
             nearest_target = (target_x, target_y)
 
     return nearest_target
+
+def check_finish():
+    global score_rock
+    global score_paper
+    global score_scissor
+    if score_rock >= 75:
+        winner = "Rock"
+    elif score_paper >= 75:
+        winner = 'Paper'
+    else:
+        winner = 'Scissor'
+    if score_rock >= 75 or score_paper >= 75 or score_scissor >= 75:
+        finish_label = tk.Label(window, text=f"Finish!!! {winner} is winner", font=("Helvetica", 30))
+        finish_label.place(x=50, y=375)
 
 # Create a Tkinter window
 window = tk.Tk()
